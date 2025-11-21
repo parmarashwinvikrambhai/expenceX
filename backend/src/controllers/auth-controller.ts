@@ -277,7 +277,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
         user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
         user.resetPasswordExpires = new Date(Date.now() + 4 * 60 * 1000)
         await user.save();
-        const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+        const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
         const html = `
       <p>Click below link to reset password:</p>
       <a href="${resetUrl}" target="_blank">${resetUrl}</a> 
