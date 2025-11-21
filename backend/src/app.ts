@@ -18,9 +18,11 @@ app.use(cors({
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 }));
-
-// (optional) handle OPTIONS for all routes
-app.options("*", cors());
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    next();
+});
 
 app.use(express.json());
 app.use(cookieParser());
