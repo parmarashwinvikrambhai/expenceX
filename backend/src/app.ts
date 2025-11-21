@@ -36,8 +36,8 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/auth", userRoute);
-app.use("/category", categoryRoute);
-app.use("/transaction", transactionRoute);
+app.use("/api", categoryRoute);
+app.use("/api", transactionRoute);
 
 app.get("/", (req, res) => {
     res.send("Backend running ✔");
