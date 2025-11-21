@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-    baseURL: "http://localhost:2000/api", // 
+    baseURL: "https://expencex.onrender.com/api", 
     withCredentials: true, 
 });
 
