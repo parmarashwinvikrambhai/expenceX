@@ -1,0 +1,9 @@
+@import "tailwindcss";
+/* HeadlessUI Dropdown Fix for Tailwind v4 */
+[data-headlessui-state="open"] {
+  display: block !important;
+}
+
+[data-headlessui-state="closed"] {
+  display: none !important;
+}
