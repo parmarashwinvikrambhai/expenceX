@@ -78,10 +78,11 @@ export const loginUser = async (req: Request, res: Response) => {
         const token = jwt.sign({ id: user._id, email: user.email }, secret, { expiresIn: "1d" });
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
+            secure: true,            
+            sameSite: "none",        
             maxAge: 24 * 60 * 60 * 1000,
         });
+
 
 
         res.status(200).json({
@@ -109,8 +110,8 @@ export const logoutUser = async (req: Request, res: Response) => {
     try {
         res.clearCookie("token", {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // only HTTPS in prod
-            sameSite: "lax",
+            secure: true,         
+            sameSite: "none",
         });
         res.status(200).json({ message: "Logged out successfully" });
 
@@ -216,7 +217,7 @@ export const changePassword = async (req: Request, res: Response) => {
         if(!user){
             return res.status(404).json({message:"User not found"});
         }
-        const isMatch = bcrypt.compare(Password,newPassword);
+        const isMatch = await bcrypt.compare(Password, user.password);
         if(!isMatch){
             return res.status(400).json({ message: "Password and new password not matched..." });
         }
