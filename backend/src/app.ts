@@ -1,23 +1,26 @@
 import express from "express";
 import dotenv from "dotenv";
-import dbConnect from "./config/db";
+import dbConnect from "./config/db.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import userRoute from "./routes/auth-routes";
-import categoryRoute from "./routes/category-routes";
-import transactionRoute from "./routes/transaction-routes";
+import userRoute from "./routes/auth-routes.js";
+import categoryRoute from "./routes/category-routes.js";
+import transactionRoute from "./routes/transaction-routes.js";
 
 dotenv.config();
 
 dbConnect();
+
 const app = express();
 
-// ✅ CORS must be at very top
-app.use(cors({
-    origin: ["https://expencex-1.onrender.com", "http://localhost:5173"],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-}));
+app.use(
+    cors({
+        origin: process.env.FRONTEND_URL,   
+        credentials: true,
+    })
+);
+
+// Extra headers
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Credentials", "true");
     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -33,8 +36,12 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/auth", userRoute);
-app.use("/api", categoryRoute);
-app.use("/api", transactionRoute);
+app.use("/api/category", categoryRoute);
+app.use("/api/transaction", transactionRoute);
+
+app.get("/", (req, res) => {
+    res.send("Backend running ✔");
+});
 
 const PORT = process.env.PORT || 2000;
 app.listen(PORT, () => {

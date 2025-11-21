@@ -1,18 +1,22 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
-const dbConnect = () => {
+const dbConnect = async () => {
     const db = process.env.CONNECTION_STRING;
-    if(!db){
-        throw new Error("Database port not provided...");
+
+    if (!db) {
+        throw new Error("Database URL not provided...");
     }
+
     try {
-        mongoose.connect(db);
-        console.log("Database connected successfully....");
-    } catch (err) {
-        console.log("Database Disconnected....");
+        await mongoose.connect(db, {
+            serverSelectionTimeoutMS: 5000,
+        });
+
+        console.log("Database connected successfully...");
+    } catch (err:any) {
+        console.error("Database connection failed:", err.message);
         process.exit(1);
-
     }
-}
+};
 
-export default dbConnect
+export default dbConnect;
