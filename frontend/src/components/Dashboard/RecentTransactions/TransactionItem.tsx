@@ -1,4 +1,4 @@
-import { Trash2, UserRoundPen, X } from "lucide-react";
+import { Loader, Trash2, UserRoundPen, X } from "lucide-react";
 import moment from "moment";
 import { useState, useEffect } from "react";
 import axiosInstance from "../../../services/apiClient";
@@ -84,27 +84,31 @@ const TransactionItem = ({
   // DELETE
   const handleDelete = async () => {
     try {
+      setLoading(true);
+
       await axiosInstance.delete(`/delete-transaction/${id}`);
       setShowModal(false);
 
-     toast.success("transaction Deleted Successfully!", {
-       style: {
-         borderRadius: "8px",
-         background: "#dc2626",
-         color: "#fff",
-         fontWeight: 600,
-         padding: "12px 16px",
-         boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-       },
-       iconTheme: {
-         primary: "#fff",
-         secondary: "#dc2626",
-       },
-     });
+      toast.success("transaction Deleted Successfully!", {
+        style: {
+          borderRadius: "8px",
+          background: "#dc2626",
+          color: "#fff",
+          fontWeight: 600,
+          padding: "12px 16px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#dc2626",
+        },
+      });
 
       onDeleted?.(id);
     } catch (error) {
       console.error("Delete error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -186,6 +190,11 @@ const TransactionItem = ({
         className="flex flex-col sm:flex-row sm:items-center sm:justify-between 
                  bg-gray-50 hover:bg-gray-100 px-4 py-3 rounded-xl transition gap-3"
       >
+        {loading && (
+                 <div className="fixed inset-0 backdrop-blur-md  bg-black/20 flex items-center justify-center z-9999">
+                   <Loader size={50} className="animate-spin text-black" />
+                 </div>
+               )}
         <div className="capitalize w-full">
           <p className="text-gray-900 font-medium text-base sm:text-lg">
             {category.name}

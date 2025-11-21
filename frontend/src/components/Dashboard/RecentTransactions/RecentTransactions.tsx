@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import TransactionItem from "./TransactionItem";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../services/apiClient";
-import { Plus } from "lucide-react";
+import { Files, Loader, Plus } from "lucide-react";
 
 interface CategoryType {
   _id: string;
@@ -56,6 +56,11 @@ const RecentTransactions = () => {
 
   return (
     <div className="bg-white p-6 rounded-2xl shadow-md mt-16 sm:mt-10 md:mt-8 max-w-full w-full sm:p-6 md:p-8 lg:p-10">
+      {loading && (
+              <div className="fixed inset-0 backdrop-blur-md  bg-black/20 flex items-center justify-center z-9999">
+                <Loader size={50} className="animate-spin text-black" />
+              </div>
+            )}
       <div
         className="flex items-center justify-between mb-5 
                     flex-wrap gap-3"
@@ -82,13 +87,9 @@ const RecentTransactions = () => {
           Loading...
         </p>
       ) : transactions.length === 0 ? (
-        <div
-          className="flex flex-col items-center justify-center 
-                      py-10 text-center gap-4"
-        >
-          <p className="text-gray-500 text-sm sm:text-base">
-            No transactions found
-          </p>
+        <div className="flex flex-col items-center justify-center py-10 text-center gap-4 text-gray-500">
+          <Files />
+          <p className="text-sm sm:text-base">No transactions found</p>
           <button
             type="button"
             onClick={() => navigate("/add-transaction")}

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X } from "lucide-react";
+import {  X } from "lucide-react";
 import axiosInstance from "../../services/apiClient";
 import {Listbox,ListboxButton,ListboxOption,ListboxOptions} from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
@@ -73,6 +73,7 @@ const AddCategory = () => {
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-md flex justify-center items-center z-50">
+      
       <div className="bg-white rounded-2xl p-8 w-[400px] shadow-xl relative">
         {/* Close Button */}
         <button

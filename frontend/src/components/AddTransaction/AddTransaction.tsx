@@ -28,6 +28,8 @@ const AddTransaction = () => {
   const [amount, setAmount] = useState<number | "">("");
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+
 
   const navigate = useNavigate();
 
@@ -53,7 +55,7 @@ const AddTransaction = () => {
 
  const handleSubmit = async (e: React.FormEvent) => {
    e.preventDefault();
-
+    setLoading(true);
    try {
      await axiosInstance.post("/create-transaction", {
        type,
@@ -81,22 +83,24 @@ const AddTransaction = () => {
      setTimeout(() => {
        navigate("/transactions");
      }, 800);
-   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     // eslint-disable-next-line @typescript-eslint/no-unused-vars
    } catch (err) {
-    toast.error("Failed to add Transaction", {
-      style: {
-        borderRadius: "8px",
-        background: "#dc2626",
-        color: "#fff",
-        fontWeight: 600,
-        padding: "12px 16px",
-        boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-      },
-      iconTheme: {
-        primary: "#fff",
-        secondary: "#dc2626",
-      },
-    });
+     toast.error("Failed to add Transaction", {
+       style: {
+         borderRadius: "8px",
+         background: "#dc2626",
+         color: "#fff",
+         fontWeight: 600,
+         padding: "12px 16px",
+         boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+       },
+       iconTheme: {
+         primary: "#fff",
+         secondary: "#dc2626",
+       },
+     });
+   } finally {
+     setLoading(false);
    }
  };
 if (!showForm) return null;
@@ -166,7 +170,7 @@ if (!showForm) return null;
                   {filteredCategories.length > 0 ? (
                     filteredCategories.map((cat) => (
                       <ListboxOption
-                        key={cat._id}    
+                        key={cat._id}
                         value={cat}
                         className="cursor-pointer px-3 py-2 rounded-lg data-focus:bg-gray-300 flex items-center gap-2"
                       >
@@ -234,9 +238,9 @@ if (!showForm) return null;
 
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700"
-          >
-            Add Transaction
+            disabled={loading}
+            className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400">
+            {loading ? "Adding..." : "Transaction"}
           </button>
         </form>
       </div>

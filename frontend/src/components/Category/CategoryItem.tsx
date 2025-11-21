@@ -1,4 +1,4 @@
-import { Trash2, UserRoundPen, X } from "lucide-react";
+import { Loader, Trash2, UserRoundPen, X } from "lucide-react";
 import { useState } from "react";
 import axiosInstance from "../../services/apiClient";
 import toast from "react-hot-toast";
@@ -30,7 +30,20 @@ function CategoryItem({ id, name, type, onDeleted, onUpdated }: Props) {
     e.preventDefault();
 
     if (!editName.trim()) {
-      toast.error("Please enter category name");
+      toast.error("Please enter category", {
+        style: {
+          borderRadius: "8px",
+          background: "#dc2626",
+          color: "#fff",
+          fontWeight: 600,
+          padding: "12px 16px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#dc2626",
+        },
+      });
       return;
     }
 
@@ -60,37 +73,10 @@ function CategoryItem({ id, name, type, onDeleted, onUpdated }: Props) {
       onUpdated?.();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      toast.error("Failed to update category");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      await axiosInstance.delete(`/delete-category/${id}`);
-      toast.success("Category Deleted Successfully!", {
+      toast.error("failed to update category", {
         style: {
           borderRadius: "8px",
-          background: "#dc2626", 
-          color: "#fff",
-          fontWeight: 600,
-          padding: "12px 16px",
-          boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-        },
-        iconTheme: {
-          primary: "#fff",
-          secondary: "#dc2626", 
-        },
-      });
-
-      setShowDeleteModal(false);
-      onDeleted?.(id);
-    } catch (error) {
-      toast.error("failed to Delete category", {
-        style: {
-          borderRadius: "8px",
-          background: "#dc2626", 
+          background: "#dc2626",
           color: "#fff",
           fontWeight: 600,
           padding: "12px 16px",
@@ -101,8 +87,52 @@ function CategoryItem({ id, name, type, onDeleted, onUpdated }: Props) {
           secondary: "#dc2626",
         },
       });
- 
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+
+      await axiosInstance.delete(`/delete-category/${id}`);
+      toast.success("Category Deleted Successfully!", {
+        style: {
+          borderRadius: "8px",
+          background: "#dc2626",
+          color: "#fff",
+          fontWeight: 600,
+          padding: "12px 16px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#dc2626",
+        },
+      });
+
+      setShowDeleteModal(false);
+      onDeleted?.(id);
+    } catch (error) {
+      toast.error("failed to Delete category", {
+        style: {
+          borderRadius: "8px",
+          background: "#dc2626",
+          color: "#fff",
+          fontWeight: 600,
+          padding: "12px 16px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#dc2626",
+        },
+      });
+
       console.error("Delete error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -113,6 +143,11 @@ function CategoryItem({ id, name, type, onDeleted, onUpdated }: Props) {
        className="flex flex-col sm:flex-row sm:items-center sm:justify-between 
                  bg-white hover:bg-gray-100 transition-colors px-4 py-3 rounded-xl gap-3"
      >
+       {loading && (
+         <div className="fixed inset-0 backdrop-blur-md  bg-black/20 flex items-center justify-center z-9999">
+           <Loader size={50} className="animate-spin text-black" />
+         </div>
+       )}
        {/* LEFT TEXT */}
        <div className="capitalize flex flex-col gap-1 w-full">
          <p className="text-gray-900 font-medium text-base sm:text-lg">

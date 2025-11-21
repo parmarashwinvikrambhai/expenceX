@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../../services/apiClient";
 import { useNavigate } from "react-router-dom";
+import { Loader } from "lucide-react";
 
 function Profile() {
   const [profile, setProfile] = useState<{
@@ -14,6 +15,7 @@ function Profile() {
 
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
+  
   const navigate = useNavigate();
 
   // Edit form states
@@ -76,25 +78,26 @@ const handleUpdate = async () => {
       console.log("Update error:", err);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="text-center mt-20 text-xl font-semibold text-gray-800 border rounded-xl p-3 w-[800px] m-auto">
-        Loading Profile...
-      </div>
-    );
-  }
-
-  if (!profile) {
-    return (
-      <div className="text-center mt-20 text-xl font-semibold text-red-600 border rounded-xl p-3 w-[800px] m-auto">
-        Failed to Load Profile
-      </div>
-    );
-  }
-
+if (loading) {
   return (
+    <div className="fixed inset-0 backdrop-blur-md bg-black/20 flex items-center justify-center z-9999">
+      <Loader size={50} className="animate-spin text-black" />
+    </div>
+  );
+}
+
+if (!profile) {
+  return (
+    <div className="text-center mt-20 text-xl font-semibold text-red-600 border rounded-xl p-3 w-[800px] m-auto">
+      Failed to Load Profile
+    </div>
+  );
+}
+
+
+return (
     <div className="w-full flex justify-center px-4 py-10">
+      
       <div
         className="
         w-full max-w-sm 
@@ -165,7 +168,7 @@ const handleUpdate = async () => {
                   Change Password
                 </button>
               </div>
-            </>   
+            </>
           )}
 
           {editMode && (
