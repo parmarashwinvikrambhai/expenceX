@@ -2,6 +2,7 @@ import { Eye, EyeOff } from "lucide-react";
 import axiosInstance from "../../services/apiClient";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -23,6 +24,20 @@ const Register = () => {
 
     try {
       await axiosInstance.post("/auth/register", {name,email,password});
+      toast.success("Register uccessfully", {
+        style: {
+          borderRadius: "8px",
+          background: "#1e40af",
+          color: "#fff",
+          fontWeight: 600,
+          padding: "12px 16px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#1e40af",
+        },
+      });
       navigate("/login");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {

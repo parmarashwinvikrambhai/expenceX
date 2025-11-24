@@ -40,7 +40,7 @@ function ForgotPassword() {
       toast.success(res.data.message || "Email sent successfully!", {
         style: {
           borderRadius: "8px",
-          background: "#dc2626",
+          background: "#1e40af",
           color: "#fff",
           fontWeight: 600,
           padding: "12px 16px",
@@ -48,7 +48,7 @@ function ForgotPassword() {
         },
         iconTheme: {
           primary: "#fff",
-          secondary: "#dc2626",
+          secondary: "#1e40af",
         },
       });
       
