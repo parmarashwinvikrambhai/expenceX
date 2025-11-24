@@ -69,7 +69,7 @@ const loginUser = async (req, res) => {
     try {
         const user = await user_model_1.default.findOne({ email });
         if (!user) {
-            return res.status(400).json({ message: "Invalid credential..." });
+            return res.status(400).json({ message: "User not found..." });
         }
         const isMatching = await bcrypt_1.default.compare(password, user.password);
         if (!isMatching) {
@@ -82,8 +82,8 @@ const loginUser = async (req, res) => {
         const token = jsonwebtoken_1.default.sign({ id: user._id, email: user.email }, secret, { expiresIn: "1d" });
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
+            secure: true,
+            sameSite: "none",
             maxAge: 24 * 60 * 60 * 1000,
         });
         res.status(200).json({
@@ -112,8 +112,8 @@ const logoutUser = async (req, res) => {
     try {
         res.clearCookie("token", {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // only HTTPS in prod
-            sameSite: "lax",
+            secure: true,
+            sameSite: "none",
         });
         res.status(200).json({ message: "Logged out successfully" });
     }
@@ -217,7 +217,7 @@ const changePassword = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        const isMatch = bcrypt_1.default.compare(Password, newPassword);
+        const isMatch = await bcrypt_1.default.compare(Password, user.password);
         if (!isMatch) {
             return res.status(400).json({ message: "Password and new password not matched..." });
         }
@@ -265,23 +265,33 @@ const forgotPassword = async (req, res) => {
         const { email } = validateData.data;
         const user = await user_model_1.default.findOne({ email });
         if (!user) {
-            return res.status(404).json({ message: "user not found..." });
+            return res.status(404).json({ message: "User not found..." });
         }
         const resetToken = crypto_1.default.randomBytes(32).toString("hex");
-        user.resetPasswordToken = crypto_1.default.createHash("sha256").update(resetToken).digest("hex");
-        user.resetPasswordExpires = new Date(Date.now() + 4 * 60 * 1000);
+        const hashedToken = crypto_1.default.createHash("sha256").update(resetToken).digest("hex");
+        user.resetPasswordToken = hashedToken;
+        user.resetPasswordExpires = new Date(Date.now() + 4 * 60 * 1000); // 4 min expire
         await user.save();
-        const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+        const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
         const html = `
-      <p>Click below link to reset password:</p>
-      <a href="${resetUrl}" target="_blank">${resetUrl}</a> 
-    `;
-        await (0, emailService_1.sendEmail)(user.email, "Reset Password", html);
-        return res.json({ message: "Reset link sent successfully" });
+            <h2>Password Reset Request</h2>
+            <p>We received a request to reset your password.</p>
+            <p>Click the link below to reset:</p>
+            <a href="${resetUrl}" target="_blank" 
+                style="background:#4f46e5;color:white;padding:10px 15px;border-radius:6px;text-decoration:none;">
+                Reset Password
+            </a>
+            <p>This link will expire in 4 minutes.</p>
+        `;
+        await (0, emailService_1.sendEmail)(user.email, "Reset Your Password - Expense Tracker", html);
+        return res.json({ message: "Reset link sent successfully!" });
     }
     catch (error) {
         console.error("Forgot Password Error:", error);
-        res.status(500).json({ message: "Server Error", error: error.message });
+        return res.status(500).json({
+            message: "Server Error",
+            error: error.message
+        });
     }
 };
 exports.forgotPassword = forgotPassword;

@@ -4,17 +4,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
-const dbConnect = () => {
+const dbConnect = async () => {
     const db = process.env.CONNECTION_STRING;
     if (!db) {
-        throw new Error("Database port not provided...");
+        throw new Error("Database URL not provided...");
     }
     try {
-        mongoose_1.default.connect(db);
-        console.log("Database connected successfully....");
+        await mongoose_1.default.connect(db, {
+            serverSelectionTimeoutMS: 5000,
+        });
+        console.log("Database connected successfully...");
     }
     catch (err) {
-        console.log("Database Disconnected....");
+        console.error("Database connection failed:", err.message);
         process.exit(1);
     }
 };

@@ -272,24 +272,34 @@ export const forgotPassword = async (req: Request, res: Response) => {
         const { email } = validateData.data;
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ message: "user not found..." });
+            return res.status(404).json({ message: "User not found..." });
         }
         const resetToken = crypto.randomBytes(32).toString("hex");
-        user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-        user.resetPasswordExpires = new Date(Date.now() + 4 * 60 * 1000)
+        const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+        user.resetPasswordToken = hashedToken;
+        user.resetPasswordExpires = new Date(Date.now() + 4 * 60 * 1000); // 4 min expire
         await user.save();
         const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
         const html = `
-      <p>Click below link to reset password:</p>
-      <a href="${resetUrl}" target="_blank">${resetUrl}</a> 
-    `;
-        await sendEmail(user.email, "Reset Password", html);
-        return res.json({ message: "Reset link sent successfully" });
-    } catch (error:any) {
+            <h2>Password Reset Request</h2>
+            <p>We received a request to reset your password.</p>
+            <p>Click the link below to reset:</p>
+            <a href="${resetUrl}" target="_blank" 
+                style="background:#4f46e5;color:white;padding:10px 15px;border-radius:6px;text-decoration:none;">
+                Reset Password
+            </a>
+            <p>This link will expire in 4 minutes.</p>
+        `;
+        await sendEmail(user.email,"Reset Your Password - Expense Tracker",html);
+        return res.json({ message: "Reset link sent successfully!" });
+    } catch (error: any) {
         console.error("Forgot Password Error:", error);
-        res.status(500).json({ message: "Server Error", error: error.message });
+        return res.status(500).json({
+            message: "Server Error",
+            error: error.message
+        });
     }
-}
+};
 
 export const resetPassword = async (req: Request, res: Response) => {
     try {
