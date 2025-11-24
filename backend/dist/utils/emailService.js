@@ -6,7 +6,7 @@ const resend = new resend_1.Resend(process.env.RESEND_API_KEY);
 const sendEmail = async (to, subject, html) => {
     try {
         await resend.emails.send({
-            from: "Expense Tracker <onboarding@resend.dev>",
+            from: "Expense Tracker <noreply@expencex.com>",
             to,
             subject,
             html,
