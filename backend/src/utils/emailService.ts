@@ -6,7 +6,7 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
     try {
         await resend.emails.send({
             from: "Expense Tracker <onboarding@resend.dev>",
-            to,
+            to: "ap9320000@gmail.com",  
             subject,
             html,
         });
